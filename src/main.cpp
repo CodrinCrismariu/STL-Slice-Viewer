@@ -1,4 +1,55 @@
 #include <raylib-cpp.hpp>
+#include <fstream>
+#include <vector>
+
+struct Vertex {
+    double x, y, z;
+    Vertex(double X, double Y, double Z) {
+        x = X;
+        y = Y;
+        z = Z;
+    }
+};
+
+struct Triangle {
+    Vertex v1, v2, v3;
+    Triangle(Vertex V1, Vertex V2, Vertex V3) {
+        v1 = V1;
+        v2 = V2;
+        v3 = V3;
+    }
+};
+
+std::vector< Triangle > parseSTLfile(std::string filepath) {
+
+    std::vector< Triangle > parsedTriangles;
+    std::vector< Vertex > vertexBuffer;
+
+    // noob parsing strategy but works for now
+
+    std::ifstream fin(filepath);
+
+    std::string in;
+    int x, y, z;
+
+    while(fin >> in) {
+        if(in == "vertex") {
+            fin >> x >> y >> z;
+            vertexBuffer.push_back( Vertex(x, y, z) );
+        }
+
+        if(vertexBuffer.size() == 3) {
+            parsedTriangles.push_back( Triangle(
+                vertexBuffer[0],
+                vertexBuffer[1],
+                vertexBuffer[2]
+            ));
+        }
+    }
+
+    return parsedTriangles;
+
+}
 
 int main() {
     
@@ -21,7 +72,6 @@ int main() {
         // Draw
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        textColor.DrawText("Congrats! You created your first window!", 190, 200, 20);
         EndDrawing();
     }
 
